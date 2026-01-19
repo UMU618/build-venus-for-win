@@ -109,11 +109,11 @@ if input_configuration == 'release':
 # Build meson arguments
 script_dir = os.path.dirname(__file__)
 meson_args = [
-    os.path.join(script_dir, f'build/vv_{input_platform}_{input_configuration}'),
+    os.path.join(script_dir, 'build', f'vv_{input_platform}_{input_configuration}'),
     '.',
     '--backend=vs',
     '--default-library=static',
-    f'--prefix={os.path.join(script_dir, f'build/out_vv_{input_platform}_{input_configuration}')}',
+    f'--prefix={os.path.join(script_dir, 'build', f'out_vv_{input_platform}_{input_configuration}')}',
     f'-Dbuildtype={input_configuration}',
     f'-Db_ndebug={no_debug}',
     f'-Db_vscrt={input_vcrt}',
@@ -139,9 +139,11 @@ if cross_file:
 if min_win_ver:
     meson_args.append(f"-Dmin-windows-version={min_win_ver}")
 
+# Keep first two elements, sort the rest
+sorted_args = meson_args[:2] + sorted(meson_args[2:])
 # Print meson arguments
 print("  Meson arguments")
-for arg in meson_args:
+for arg in sorted_args:
     print(f"    {arg}")
 print()
 
@@ -151,7 +153,7 @@ def quote_arg(arg):
 
 # Print meson setup command
 print('meson command:')
-print(f'cd {os.getcwd()}')
-quoted_args = [quote_arg(arg) for arg in meson_args]
+print(f'cd {script_dir}')
+quoted_args = [quote_arg(arg) for arg in sorted_args]
 print(f'meson setup {' '.join(quoted_args)}')
 print()
